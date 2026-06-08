@@ -14,19 +14,15 @@ def before_request():
 
 @delivery_bp.route('/dashboard')
 def dashboard():
-    # Orders assigned to this delivery guy that are ready for pickup or in progress
     assigned_orders = Order.query.filter_by(
         delivery_guy_id=current_user.id,
         admin_approved=True
     ).filter(Order.status.in_(['ready_for_delivery', 'delivered'])).all()
-    
-    # Also show sales people under this delivery guy
     sales_team = User.query.filter_by(
         assigned_delivery_id=current_user.id,
         role='sales',
         status='approved'
     ).all()
-    
     return render_template('delivery/dashboard.html', orders=assigned_orders, sales_team=sales_team)
 
 @delivery_bp.route('/pickup-order/<int:order_id>')
@@ -38,9 +34,8 @@ def pickup_order(order_id):
     if not order.baker_confirmed:
         flash('Baker has not confirmed this order yet', 'warning')
         return redirect(url_for('delivery.dashboard'))
-    
     order.delivery_picked_up = True
-    order.status = 'delivered'  # means delivered to sales person (step before money)
+    order.status = 'delivered'
     verif = DeliveryVerification.query.filter_by(order_id=order.id).first()
     if verif:
         verif.delivery_picked_up_at = datetime.utcnow()
@@ -48,14 +43,13 @@ def pickup_order(order_id):
     flash('You have picked up the order from baker', 'success')
     return redirect(url_for('delivery.dashboard'))
 
-@delivery_bp.route('/handover-order/<int:order_id>', methods=['GET','POST'])
+@delivery_bp.route('/handover-order/<int:order_id>', methods=['GET', 'POST'])
 def handover_order(order_id):
     order = Order.query.get_or_404(order_id)
     if order.delivery_guy_id != current_user.id:
         flash('Unauthorized', 'danger')
         return redirect(url_for('delivery.dashboard'))
     if request.method == 'POST':
-        # Mark as handed over to sales person
         order.delivery_handed_over = True
         verif = DeliveryVerification.query.filter_by(order_id=order.id).first()
         if verif:
@@ -65,7 +59,7 @@ def handover_order(order_id):
         return redirect(url_for('delivery.dashboard'))
     return render_template('delivery/handover.html', order=order)
 
-@delivery_bp.route('/collect-money/<int:order_id>', methods=['GET','POST'])
+@delivery_bp.route('/collect-money/<int:order_id>', methods=['GET', 'POST'])
 def collect_money(order_id):
     order = Order.query.get_or_404(order_id)
     if order.delivery_guy_id != current_user.id:
