@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User, Residence, db
+from models import User, Residence
+from extensions import db
 from forms import LoginForm, SalesRegistrationForm
 
 auth_bp = Blueprint('auth', __name__)
@@ -31,10 +32,8 @@ def register_sales():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = SalesRegistrationForm()
-    # populate residence choices
     form.residence_id.choices = [(0, 'Add new residence')] + [(r.id, r.name) for r in Residence.query.all()]
     if form.validate_on_submit():
-        # handle new residence
         if form.residence_id.data == 0:
             if not form.new_residence_name.data:
                 flash('Please provide a residence name', 'danger')
@@ -48,7 +47,6 @@ def register_sales():
             res_id = new_res.id
         else:
             res_id = form.residence_id.data
-        # create sales user
         user = User(
             email=form.email.data,
             name=form.name.data,
