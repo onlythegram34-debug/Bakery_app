@@ -1,7 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime, date
-from app import db, login_manager
+from extensions import db, login_manager
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -14,15 +13,14 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20))
-    role = db.Column(db.String(20), nullable=False)  # admin, sales, baker, delivery
-    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected (for sales)
+    role = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(20), default='pending')
     rejection_reason = db.Column(db.String(200))
-    created_by_admin = db.Column(db.Boolean, default=False)  # True for baker/delivery
+    created_by_admin = db.Column(db.Boolean, default=False)
     assigned_delivery_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     residence_id = db.Column(db.Integer, db.ForeignKey('residences.id'))
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # relationships
     residence = db.relationship('Residence', backref='sales_person', uselist=False, foreign_keys=[residence_id])
     orders = db.relationship('Order', backref='sales_person', lazy=True, foreign_keys='Order.sales_person_id')
     earnings = db.relationship('Earnings', backref='user', lazy=True)
@@ -48,7 +46,7 @@ class Order(db.Model):
     total_amount = db.Column(db.Float, nullable=False)
     payment_received = db.Column(db.Boolean, default=False)
     payment_date = db.Column(db.DateTime)
-    status = db.Column(db.String(30), default='pending_admin')  # pending_admin, approved_admin, baking, ready_for_delivery, delivered, completed
+    status = db.Column(db.String(30), default='pending_admin')
     admin_approved = db.Column(db.Boolean, default=False)
     baker_confirmed = db.Column(db.Boolean, default=False)
     delivery_picked_up = db.Column(db.Boolean, default=False)
@@ -71,4 +69,4 @@ class Earnings(db.Model):
     period_start = db.Column(db.Date)
     period_end = db.Column(db.Date)
     amount = db.Column(db.Float, default=0.0)
-    calculation_basis = db.Column(db.String(50))  # '10_orders' or '20_days'
+    calculation_basis = db.Column(db.String(50))
