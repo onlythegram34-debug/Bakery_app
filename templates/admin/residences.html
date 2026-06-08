@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Residences</h2>
+<a href="{{ url_for('admin.add_residence') }}" class="btn btn-primary mb-3">Add New Residence</a>
+<table class="table">
+    <thead><tr><th>Name</th><th>Location</th><th>Assigned Sales Person</th></tr></thead>
+    <tbody>
+        {% for r in residences %}
+        <tr>
+            <td>{{ r.name }}</td>
+            <td>{{ r.location or '-' }}</td>
+            <td>{{ r.sales_person.name if r.sales_person else 'Vacant' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
