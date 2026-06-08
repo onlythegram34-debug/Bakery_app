@@ -1,1 +1,29 @@
-
+{% extends "base.html" %}
+{% block content %}
+<h2>My Earnings</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Period Start</th>
+            <th>Period End</th>
+            <th>Amount (R)</th>
+            <th>Basis</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for e in earnings %}
+        <tr>
+            <td>{{ e.period_start.strftime('%Y-%m-%d') if e.period_start else '-' }}</td>
+            <td>{{ e.period_end.strftime('%Y-%m-%d') if e.period_end else '-' }}</td>
+            <td>R{{ "%.2f"|format(e.amount) }}</td>
+            <td>{{ "10 orders" if e.calculation_basis == '10_orders' else "20 days" }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">No earnings recorded yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{{ url_for('sales.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+{% endblock %}
