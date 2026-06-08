@@ -1,1 +1,18 @@
-
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<div class="row mt-4">
+    <div class="col-md-3"><div class="card"><div class="card-body"><h5>Pending Applicants</h5><h3>{{ pending }}</h3></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h5>Total Orders</h5><h3>{{ orders }}</h3></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h5>Total Revenue</h5><h3>R{{ "%.2f"|format(revenue) }}</h3></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h5>Active Sales</h5><h3>{{ active_sales }}</h3></div></div></div>
+</div>
+<div class="row mt-3">
+    <div class="col-md-6"><a href="{{ url_for('admin.applicants') }}" class="btn btn-primary">Manage Applicants</a></div>
+    <div class="col-md-6"><a href="{{ url_for('admin.orders') }}" class="btn btn-primary">Manage Orders</a></div>
+    <div class="col-md-6 mt-2"><a href="{{ url_for('admin.create_baker') }}" class="btn btn-success">Create Baker</a></div>
+    <div class="col-md-6 mt-2"><a href="{{ url_for('admin.create_delivery') }}" class="btn btn-success">Create Delivery Guy</a></div>
+    <div class="col-md-6 mt-2"><a href="{{ url_for('admin.analytics') }}" class="btn btn-info">Analytics</a></div>
+    <div class="col-md-6 mt-2"><a href="{{ url_for('admin.update_earnings') }}" class="btn btn-warning">Update Earnings</a></div>
+</div>
+{% endblock %}
