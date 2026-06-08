@@ -1,1 +1,10 @@
-
+{% extends "base.html" %}
+{% block content %}
+<h3>Analytics</h3>
+<p>Total Revenue: R{{ "%.2f"|format(total_revenue) }}</p>
+<p>Monthly Revenue: R{{ "%.2f"|format(monthly_revenue) }}</p>
+<h4>Top Sales Persons</h4>
+<ul>{% for s in top_sales %}<li>{{ s.name }}: R{{ "%.2f"|format(s.total_sales) }} ({{ s.order_count }} orders)</li>{% endfor %}</ul>
+<h4>Unpaid Orders</h4>
+<ul>{% for o in unpaid_orders %}<li>Order #{{ o.id }} - R{{ o.total_amount }} from {{ o.sales_person.name }}</li>{% endfor %}</ul>
+{% endblock %}
