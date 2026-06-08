@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
-from models import Order, User, DeliveryVerification, db
+from models import Order, User, DeliveryVerification
+from extensions import db
 from utils import role_required
 from datetime import datetime
 
@@ -69,7 +70,10 @@ def collect_money(order_id):
         flash('You must hand over the cakes before collecting money', 'warning')
         return redirect(url_for('delivery.dashboard'))
     if request.method == 'POST':
-        amount_received = float(request.form.get('amount_received', 0))
+        try:
+            amount_received = float(request.form.get('amount_received', 0))
+        except ValueError:
+            amount_received = 0
         if amount_received >= order.total_amount:
             order.payment_received = True
             order.payment_date = datetime.utcnow()
