@@ -1,1 +1,44 @@
-
+{% extends "base.html" %}
+{% block content %}
+<h2>Baker Dashboard</h2>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Orders to Bake</h3>
+        {% if orders %}
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>Order ID</th><th>Sales Person</th><th>Buckets</th><th>Delivery Date</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.sales_person.name }}</td>
+                    <td>{{ order.total_buckets }}</td>
+                    <td>{{ order.delivery_date }}</td>
+                    <td><a href="{{ url_for('baker.confirm_bake', order_id=order.id) }}" class="btn btn-sm btn-success">Confirm Ready</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No pending orders.</p>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h3>Recently Completed</h3>
+        {% if completed %}
+        <table class="table table-sm">
+            <thead><tr><th>Order ID</th><th>Date</th><th>Buckets</th></tr></thead>
+            <tbody>
+                {% for order in completed %}
+                <tr><td>{{ order.id }}</td><td>{{ order.order_date }}</td><td>{{ order.total_buckets }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No completed orders yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
