@@ -1,16 +1,10 @@
 import os
 from flask import Flask, render_template, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager, current_user
+from flask_login import current_user
 from dotenv import load_dotenv
+from extensions import db, migrate, login_manager
 
 load_dotenv()
-
-db = SQLAlchemy()
-migrate = Migrate()
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
 
 def create_app():
     app = Flask(__name__)
@@ -22,7 +16,7 @@ def create_app():
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    # Import models so they are known to migrations
+    # Import models here to avoid circular imports
     from models import User, Residence, Order, DeliveryVerification, Earnings
 
     # Register blueprints
