@@ -36,7 +36,13 @@ def register_sales():
     if form.validate_on_submit():
         # handle new residence
         if form.residence_id.data == 0:
-            new_res = Residence(name=form.new_residence_name.data, location=form.new_residence_location.data)
+            if not form.new_residence_name.data:
+                flash('Please provide a residence name', 'danger')
+                return render_template('register_sales.html', form=form)
+            new_res = Residence(
+                name=form.new_residence_name.data,
+                location=form.new_residence_location.data
+            )
             db.session.add(new_res)
             db.session.flush()
             res_id = new_res.id
@@ -57,4 +63,3 @@ def register_sales():
         flash('Registration submitted. Admin will review your application.', 'success')
         return redirect(url_for('auth.login'))
     return render_template('register_sales.html', form=form)
-  
