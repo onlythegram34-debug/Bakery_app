@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center">
+    <h1>Bakery Management System</h1>
+    <p>Manage orders, bakers, delivery, and sales.</p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+    <a href="{{ url_for('auth.register_sales') }}" class="btn btn-success">Register as Sales</a>
+</div>
+{% endblock %}
