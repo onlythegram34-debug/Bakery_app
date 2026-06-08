@@ -1,1 +1,9 @@
-
+{% extends "base.html" %}
+{% block content %}
+<h2>Sales Dashboard</h2>
+<p>Total Earnings: R{{ "%.2f"|format(earnings) }}</p>
+<a href="{{ url_for('sales.request_order') }}" class="btn btn-primary">Request New Order</a>
+<a href="{{ url_for('sales.earnings') }}" class="btn btn-info">View Earnings</a>
+<h3 class="mt-4">Your Orders</h3>
+<table class="table">...</table>
+{% endblock %}
