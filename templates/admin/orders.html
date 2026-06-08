@@ -1,1 +1,26 @@
-
+{% extends "base.html" %}
+{% block content %}
+<h3>Pending Orders</h3>
+<table class="table">
+    <thead><tr><th>ID</th><th>Sales Person</th><th>Amount</th><th>Requested</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for o in pending %}
+    <tr>
+        <td>{{ o.id }}</td><td>{{ o.sales_person.name }}</td><td>R{{ o.total_amount }}</td><td>{{ o.request_time }}</td>
+        <td>
+            <a href="{{ url_for('admin.approve_order', order_id=o.id) }}" class="btn btn-sm btn-success">Approve</a>
+            <form method="POST" action="{{ url_for('admin.assign_order_to_delivery', order_id=o.id) }}" style="display:inline;">
+                <select name="delivery_id">
+                    <option value="">Assign delivery</option>
+                    {% for d in delivery_guys %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<h3>All Orders (last 100)</h3>
+<table class="table">...</table>
+{% endblock %}
