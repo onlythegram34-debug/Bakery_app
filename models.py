@@ -18,21 +18,21 @@ class User(UserMixin, db.Model):
     status = db.Column(db.String(20), default='pending')  # pending, approved, rejected (for sales)
     rejection_reason = db.Column(db.String(200))
     created_by_admin = db.Column(db.Boolean, default=False)  # True for baker/delivery
-    assigned_delivery_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # for sales
+    assigned_delivery_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     residence_id = db.Column(db.Integer, db.ForeignKey('residences.id'))
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
 
     # relationships
-    residence = db.relationship('Residence', backref='sales_person', uselist=False)
-    orders = db.relationship('Order', backref='sales_person', lazy=True)
+    residence = db.relationship('Residence', backref='sales_person', uselist=False, foreign_keys=[residence_id])
+    orders = db.relationship('Order', backref='sales_person', lazy=True, foreign_keys='Order.sales_person_id')
     earnings = db.relationship('Earnings', backref='user', lazy=True)
+    assigned_delivery = db.relationship('User', remote_side=[id], backref='sales_team', foreign_keys=[assigned_delivery_id])
 
 class Residence(db.Model):
     __tablename__ = 'residences'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(200))
-    # unique constraint to ensure one sales person per residence
     sales_person_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
 
 class Order(db.Model):
@@ -44,7 +44,7 @@ class Order(db.Model):
     order_date = db.Column(db.Date, default=date.today)
     request_time = db.Column(db.DateTime, default=datetime.utcnow)
     delivery_date = db.Column(db.Date, nullable=False)
-    total_buckets = db.Column(db.Integer, default=1)  # number of 5L buckets
+    total_buckets = db.Column(db.Integer, default=1)
     total_amount = db.Column(db.Float, nullable=False)
     payment_received = db.Column(db.Boolean, default=False)
     payment_date = db.Column(db.DateTime)
