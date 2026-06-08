@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import Order, db
+from models import Order
+from extensions import db
 from forms import OrderRequestForm
 from datetime import datetime, date, time
 from utils import role_required
