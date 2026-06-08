@@ -1,1 +1,32 @@
-
+{% extends "base.html" %}
+{% block content %}
+<h3>Pending Applications</h3>
+<table class="table table-bordered">
+    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Residence</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for app in applicants %}
+    <tr>
+        <td>{{ app.name }}</td><td>{{ app.email }}</td><td>{{ app.phone }}</td>
+        <td>{{ app.residence.name if app.residence else 'N/A' }}</td>
+        <td>
+            <form method="POST" action="{{ url_for('admin.approve_applicant', user_id=app.id) }}" style="display:inline;">
+                <select name="delivery_id" required>
+                    <option value="">Select delivery guy</option>
+                    {% for d in delivery_guys %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}
+                </select>
+                <button type="submit" class="btn btn-sm btn-success">Approve</button>
+            </form>
+            <form method="POST" action="{{ url_for('admin.reject_applicant', user_id=app.id) }}" style="display:inline;">
+                <input type="text" name="reason" placeholder="Reason" required>
+                <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<h3>Approved Sales</h3>
+<ul>{% for s in approved %}<li>{{ s.name }} (Delivery: {{ s.assigned_delivery.name if s.assigned_delivery else 'Unassigned' }})</li>{% endfor %}</ul>
+<h3>Rejected with Reasons</h3>
+<ul>{% for r in rejected %}<li>{{ r.name }} - {{ r.rejection_reason }}</li>{% endfor %}</ul>
+{% endblock %}
