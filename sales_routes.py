@@ -16,24 +16,25 @@ def before_request():
 @sales_bp.route('/dashboard')
 def dashboard():
     orders = Order.query.filter_by(sales_person_id=current_user.id).order_by(Order.order_date.desc()).all()
-    return render_template('sales/dashboard.html', orders=orders)
+    earnings = sum([e.amount for e in current_user.earnings])
+    return render_template('sales/dashboard.html', orders=orders, earnings=earnings)
 
 @sales_bp.route('/request-order', methods=['GET','POST'])
 def request_order():
-    # Check unpaid previous orders
+    # Check for unpaid previous orders
     unpaid = Order.query.filter_by(sales_person_id=current_user.id, payment_received=False).first()
     if unpaid:
-        flash(f'You have unpaid order #{unpaid.id}. Please clear payment before requesting new stock.', 'danger')
+        flash(f'You have unpaid order #{unpaid.id}. Please pay before requesting new stock.', 'danger')
         return redirect(url_for('sales.dashboard'))
 
     form = OrderRequestForm()
     if form.validate_on_submit():
-        # Enforce 4am rule: if today's date and time > 4am, delivery_date cannot be today
         now = datetime.now()
-        cutoff = time(4,0)
+        cutoff = time(4, 0)
         if form.delivery_date.data == date.today() and now.time() > cutoff:
             flash('Orders for today must be placed before 4:00 AM. Please choose tomorrow.', 'danger')
             return render_template('sales/request_order.html', form=form)
+        
         order = Order(
             sales_person_id=current_user.id,
             delivery_date=form.delivery_date.data,
@@ -44,5 +45,11 @@ def request_order():
         db.session.add(order)
         db.session.commit()
         flash('Order requested. Awaiting admin approval.', 'success')
+        return redirect(url_for('sales.dashboard'))
+    return render_template('sales/request_order.html', form=form)
+
+@sales_bp.route('/earnings')
+def earnings():
+    return render_template('sales/earnings.html', earnings=current_user.earnings)
         return redirect(url_for('sales.dashboard'))
     return render_template('sales/request_order.html', form=form)
