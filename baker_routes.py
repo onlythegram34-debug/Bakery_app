@@ -14,7 +14,6 @@ def before_request():
 
 @baker_bp.route('/dashboard')
 def dashboard():
-    # Orders assigned to this baker that are approved by admin and not yet confirmed by baker
     orders = Order.query.filter_by(
         baker_id=current_user.id,
         admin_approved=True,
@@ -35,10 +34,8 @@ def confirm_bake(order_id):
     if order.baker_confirmed:
         flash('Already confirmed', 'warning')
         return redirect(url_for('baker.dashboard'))
-    
     order.baker_confirmed = True
     order.status = 'ready_for_delivery'
-    # Create verification record
     verif = DeliveryVerification.query.filter_by(order_id=order.id).first()
     if not verif:
         verif = DeliveryVerification(order_id=order.id)
