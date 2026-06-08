@@ -1,11 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, IntegerField, FloatField, DateField, TextAreaField
+from wtforms import StringField, PasswordField, SelectField, IntegerField, FloatField, DateField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, ValidationError
 from models import User
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
 
 class SalesRegistrationForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired()])
@@ -15,6 +16,7 @@ class SalesRegistrationForm(FlaskForm):
     residence_id = SelectField('Residence', coerce=int, default=0)
     new_residence_name = StringField('New Residence Name')
     new_residence_location = StringField('New Residence Location')
+    submit = SubmitField('Register')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
@@ -25,9 +27,11 @@ class OrderRequestForm(FlaskForm):
     delivery_date = DateField('Delivery Date', validators=[DataRequired()])
     total_buckets = IntegerField('Number of 5L Buckets', validators=[DataRequired()])
     total_amount = FloatField('Total Amount (R)', validators=[DataRequired()])
+    submit = SubmitField('Request Order')
 
 class AdminCreateUserForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     phone = StringField('Phone')
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    submit = SubmitField('Create User')
