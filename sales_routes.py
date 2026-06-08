@@ -16,12 +16,11 @@ def before_request():
 @sales_bp.route('/dashboard')
 def dashboard():
     orders = Order.query.filter_by(sales_person_id=current_user.id).order_by(Order.order_date.desc()).all()
-    earnings = sum([e.amount for e in current_user.earnings])
-    return render_template('sales/dashboard.html', orders=orders, earnings=earnings)
+    total_earnings = sum(e.amount for e in current_user.earnings)
+    return render_template('sales/dashboard.html', orders=orders, earnings=total_earnings)
 
-@sales_bp.route('/request-order', methods=['GET','POST'])
+@sales_bp.route('/request-order', methods=['GET', 'POST'])
 def request_order():
-    # Check for unpaid previous orders
     unpaid = Order.query.filter_by(sales_person_id=current_user.id, payment_received=False).first()
     if unpaid:
         flash(f'You have unpaid order #{unpaid.id}. Please pay before requesting new stock.', 'danger')
@@ -34,7 +33,6 @@ def request_order():
         if form.delivery_date.data == date.today() and now.time() > cutoff:
             flash('Orders for today must be placed before 4:00 AM. Please choose tomorrow.', 'danger')
             return render_template('sales/request_order.html', form=form)
-        
         order = Order(
             sales_person_id=current_user.id,
             delivery_date=form.delivery_date.data,
@@ -51,5 +49,3 @@ def request_order():
 @sales_bp.route('/earnings')
 def earnings():
     return render_template('sales/earnings.html', earnings=current_user.earnings)
-        return redirect(url_for('sales.dashboard'))
-    return render_template('sales/request_order.html', form=form)
